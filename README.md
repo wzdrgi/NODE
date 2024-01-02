@@ -4,6 +4,8 @@ A Python program for deconvolution spatial transcriptomics data and inference of
 NODE is a Python-based package for spatial transcriptomic data. NODE is based on an optimization search model and non-negative least squares problem to use scRNA-Seq data for deconvoluting spatial transcriptomics data and inferring spatial communications. In deconvolution, Node can infer cell number and cell type from spatial transcriptomics data by referring to single-cell data. In inference of spatial communication, NODE can infer the information flow in space.
 # Usage
 NODE require users to provide four types of data for deconvolution and inferring the spatial communication.
+Firstly the user needs to download and unzip it locally.
+The user can then use sys (python package) to find the directory for NODE and import it, followed by using the
 The specific form of the data is shown below:
 ## Sc_data (Single-cell data) 
 Sc_data needs to carry the gene name and cell name as a square, (0, 0) can specify any name, such as 'gene' and 'name'. Sc_data rows represent genes, columns represent cells, and each column represents the expression of a gene. The genes' name of sc_data must correspond to the genes' name of st_data.
