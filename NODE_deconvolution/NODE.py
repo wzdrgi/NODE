@@ -1,8 +1,9 @@
-from sko.tools import set_run_mode
+# from sko.tools import set_run_mode
 from sko.DE import DE
 from scipy.optimize import minimize
 import random
 import numpy as np
+from tqdm import tqdm
 
 #This function is used to read text files.
 #Only for testing
@@ -13,7 +14,7 @@ def data_visualization(data):
         print(data[i][0:5])
         
 def get_test_data(spot_number,gene_number,cell_number,type_number):
-    #先构建数据，最后加表头
+    #Build the data first and add the table header last
     #st_data:gene * spot
     #sc_data:gene * cell
     #
@@ -466,7 +467,7 @@ def get_deconvolution(sc_data,
             # print(type_number)
             # print(spot_number)
 
-            for spot in range(spot_start,spot_number):
+            for spot in tqdm(range(spot_start,spot_number)):
                 y_matrix_test = y_matrix[spot,:]
                 W0 = np.zeros((1,spot_number))
                 def fun_x_0(X):
@@ -477,7 +478,7 @@ def get_deconvolution(sc_data,
                     cons1.append({'type': 'ineq', 'fun': lambda X: X[i]})
 
                 X0 = np.zeros(type_number)
-                res = minimize(fun_x_0, X0, method='SLSQP' , constraints=cons1, options={'maxiter': sci_max_iter,'disp': True})
+                res = minimize(fun_x_0, X0, method='SLSQP' , constraints=cons1, options={'maxiter': sci_max_iter,'disp': False})
                 x_mid = res.x
                 def fun_w_0(W):
                     X = x_mid
@@ -488,7 +489,7 @@ def get_deconvolution(sc_data,
                     cons.append({'type': 'ineq', 'fun': lambda W: -W[i ]+ max_interaction})
                     cons.append({'type': 'ineq', 'fun': lambda W: W[i] + max_interaction})
                 W0 = np.zeros(spot_number)
-                res = minimize(fun_w_0, W0, method='SLSQP' , constraints=cons, options={'maxiter': sci_max_iter,'disp': True})
+                res = minimize(fun_w_0, W0, method='SLSQP' , constraints=cons, options={'maxiter': sci_max_iter,'disp': False})
                 W_mid = res.x
 
                 def fun_x(X):
@@ -502,7 +503,7 @@ def get_deconvolution(sc_data,
 
                 for i in range(1):
                     X0 = x_mid
-                    res = minimize(fun_x, X0, method='SLSQP' , constraints=cons1, options={'maxiter': sci_max_iter,'disp': True})
+                    res = minimize(fun_x, X0, method='SLSQP' , constraints=cons1, options={'maxiter': sci_max_iter,'disp': False})
                     x_mid = res.x
                 
                 save_list = []
@@ -543,9 +544,9 @@ def get_deconvolution(sc_data,
             def obj_func(X):
                 return  np.linalg.norm( (np.multiply(W0,d_matrix[spot])) @ y_matrix + X @ beta_matrix - y_matrix_test)
             #First optimize X
-            mode = 'multithreading'
+            # mode = 'multithreading'
             #multiprocess acceleration
-            set_run_mode(obj_func, mode)
+            # set_run_mode(obj_func, mode)
 
             '''
             Upper and lower bounds for initial x
@@ -566,7 +567,7 @@ def get_deconvolution(sc_data,
             
 
 
-            for spot in range(spot_start,spot_number):
+            for spot in tqdm(range(spot_start,spot_number)):
 
                 y_matrix_test = y_matrix[spot,:]
                 W0 = np.zeros((1,spot_number))
@@ -591,14 +592,14 @@ def get_deconvolution(sc_data,
                 def fun_w_0(W):
                     X = best_x
                     return np.linalg.norm((np.multiply(W,d_matrix[spot])) @ y_matrix + X @ beta_matrix - y_matrix_test)
-                set_run_mode(fun_w_0, mode)
+                # set_run_mode(fun_w_0, mode)
                 de = DE(func = fun_w_0, n_dim= spot_number, size_pop=50, max_iter = max_iter, lb = ini_w_lim, ub=ini_w_up, constraint_ueq=constraint_ueq_w)
                 best_x, best_y = de.run(200)
 
                 def obj_func_1(X):
                     W0 = best_x
                     return  np.linalg.norm( (np.multiply(W0,d_matrix[spot])) @ y_matrix + X @ beta_matrix - y_matrix_test)
-                set_run_mode(obj_func_1, mode)
+                # set_run_mode(obj_func_1, mode)
                 X_mid = X_mid * 0.8
                 de = DE(func = obj_func_1, n_dim = type_number, size_pop=50, max_iter = max_iter, lb= X_mid, ub=ini_x_up,constraint_ueq=constraint_ueq)
                 best_x, best_y = de.run(Number_of_iterations)
@@ -663,7 +664,7 @@ def get_deconvolution(sc_data,
             # print(type_number)
             # print(spot_number)
 
-            for spot in range(spot_start,spot_number):
+            for spot in tqdm(range(spot_start,spot_number)):
                 y_matrix_test = y_matrix[spot,:]
                 W0 = np.zeros((1,spot_number))
                 def fun_x_0(X):
@@ -674,7 +675,7 @@ def get_deconvolution(sc_data,
                     cons1.append({'type': 'ineq', 'fun': lambda X: X[i]})
 
                 X0 = np.zeros(type_number)
-                res = minimize(fun_x_0, X0, method='SLSQP' , constraints=cons1, options={'maxiter': sci_max_iter,'disp': True})
+                res = minimize(fun_x_0, X0, method='SLSQP' , constraints=cons1, options={'maxiter': sci_max_iter,'disp': False})
                 x_mid = res.x
                 def fun_w_0(W):
                     X = x_mid
@@ -685,7 +686,7 @@ def get_deconvolution(sc_data,
                     cons.append({'type': 'ineq', 'fun': lambda W: -W[i ]+ max_interaction})
                     cons.append({'type': 'ineq', 'fun': lambda W: W[i] + max_interaction})
                 W0 = np.zeros(spot_number)
-                res = minimize(fun_w_0, W0, method='SLSQP' , constraints=cons, options={'maxiter': sci_max_iter,'disp': True})
+                res = minimize(fun_w_0, W0, method='SLSQP' , constraints=cons, options={'maxiter': sci_max_iter,'disp': False})
                 W_mid = res.x
 
                 def fun_x(X):
@@ -699,7 +700,7 @@ def get_deconvolution(sc_data,
 
                 for i in range(1):
                     X0 = x_mid
-                    res = minimize(fun_x, X0, method='SLSQP' , constraints=cons1, options={'maxiter': sci_max_iter,'disp': True})
+                    res = minimize(fun_x, X0, method='SLSQP' , constraints=cons1, options={'maxiter': sci_max_iter,'disp': False})
                     x_mid = res.x
                 
                 save_list = []
@@ -738,9 +739,9 @@ def get_deconvolution(sc_data,
             def obj_func(X):
                 return  np.linalg.norm( (np.multiply(W0,d_matrix[spot])) @ y_matrix + X @ beta_matrix - y_matrix_test)
             #First optimize X
-            mode = 'multithreading'
+            # mode = 'multithreading'
             #multiprocess acceleration
-            set_run_mode(obj_func, mode)
+            # set_run_mode(obj_func, mode)
 
             '''
             Upper and lower bounds for initial x
@@ -762,7 +763,7 @@ def get_deconvolution(sc_data,
             
 
 
-            for spot in range(spot_start,spot_number):
+            for spot in tqdm(range(spot_start,spot_number)):
 
                 y_matrix_test = y_matrix[spot,:]
                 W0 = np.zeros((1,spot_number))
@@ -787,14 +788,14 @@ def get_deconvolution(sc_data,
                 def fun_w_0(W):
                     X = best_x
                     return np.linalg.norm((np.multiply(W,d_matrix[spot])) @ y_matrix + X @ beta_matrix - y_matrix_test)
-                set_run_mode(fun_w_0, mode)
+                # set_run_mode(fun_w_0, mode)
                 de = DE(func = fun_w_0, n_dim= spot_number, size_pop=50, max_iter = max_iter, lb = ini_w_lim, ub=ini_w_up, constraint_ueq=constraint_ueq_w)
                 best_x, best_y = de.run(200)
 
                 def obj_func_1(X):
                     W0 = best_x
                     return  np.linalg.norm( (np.multiply(W0,d_matrix[spot])) @ y_matrix + X @ beta_matrix - y_matrix_test)
-                set_run_mode(obj_func_1, mode)
+                # set_run_mode(obj_func_1, mode)
                 X_mid = X_mid * 0.8
                 de = DE(func = obj_func_1, n_dim = type_number, size_pop=50, max_iter = max_iter, lb= X_mid, ub=ini_x_up,constraint_ueq=constraint_ueq)
                 best_x, best_y = de.run(Number_of_iterations)
