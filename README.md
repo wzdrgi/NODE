@@ -75,4 +75,4 @@ The method_optimize parameter has two options, 1 and 2, with method 1 being fast
     # If necessary, the users can print the data for viewing in a data format. 
     # In deconvolution, we return the deconvolution result and spatial communications
 ## Analysed
-In analysed, we provide the code for our algorithms, the data can be obtained from data_available.txt, you can clone it locally and download data, change the path, perform the algorithms and validate it.
+In analysed, we provide the code for our algorithms, the data can be obtained from data_available.txt or https://node-deconvolution.sourceforge.io,  you can clone it locally and download data, change the path, perform the algorithms and validate it.
