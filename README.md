@@ -63,7 +63,7 @@ The method_optimize parameter has two options, 1 and 2, with method 1 being fast
 
     st_data,sc_data,cell_type,st_pixel = get_test_data(10,2000,800,10)
 
-    result_data,W_interaction = nd.get_deconvolution(
+    result_data,result_data_normalized,W_interaction = nd.get_deconvolution(
                                     st_data = st_data,
                                     sc_data = sc_data,
                                     cell_type = cell_type,
