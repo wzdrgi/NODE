@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
   name = 'NODE_deconvolution',         
   packages = ['NODE_deconvolution'],  
-  version = '0.1.3',      
+  version = '0.1.5',      
   license='MIT',        
   description = 'A Python program for deconvolution spatial transcriptomics data and inference of spatial communication',   
   author = 'Zedong Wang',                   
@@ -13,8 +13,9 @@ setup(
   install_requires=[           
           'scipy',  
           'numpy',
+          'scikit-opt',
+          'pandas',
           'tqdm',
-          'scikit-opt'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',      

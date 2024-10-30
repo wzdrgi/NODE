@@ -15,7 +15,7 @@ st_data = read_file('E:/upload_data/SCC/filtered_data/rep3/st_data.txt')
 st_coordinates = read_file('E:/upload_data/SCC/filtered_data/rep3/st_coordinates.txt')
 celltype = read_file('E:/upload_data/SCC/filtered_data/rep3/celltype.txt')
 
-result_data,W_interaction = nd.get_deconvolution(
+result_data,result_data_normalized,W_interaction = nd.get_deconvolution(
                                     st_data = st_data,
                                     sc_data = sc_data,
                                     cell_type = celltype,

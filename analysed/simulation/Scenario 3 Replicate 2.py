@@ -15,7 +15,7 @@ st_data = read_file('E:/upload_data/simulation/Scenario 3 Replicate 2/st_data.tx
 st_coordinates = read_file('E:/upload_data/simulation/Scenario 3 Replicate 2/st_coordinates.txt')
 celltype = read_file('E:/upload_data/simulation/Scenario 3 Replicate 2/celltype.txt')
 
-result_data,W_interaction = nd.get_deconvolution(
+result_data,result_data_normalized,W_interaction = nd.get_deconvolution(
                                     st_data = st_data,
                                     sc_data = sc_data,
                                     cell_type = celltype,

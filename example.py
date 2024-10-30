@@ -3,7 +3,7 @@ from NODE_deconvolution.NODE import get_test_data
 
 st_data,sc_data,cell_type,st_pixel = get_test_data(10,2000,800,10)
 
-result_data,W_interaction = nd.get_deconvolution(
+result_data,result_data_normalized,W_interaction = nd.get_deconvolution(
                                     st_data = st_data,
                                     sc_data = sc_data,
                                     cell_type = cell_type,

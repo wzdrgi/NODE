@@ -321,16 +321,14 @@ def get_STinteractions(expre_matrix, Beta_matrix, deconvolution_x):
     # print(W_communication.shape)
     return W_communication
 
-def interaction_communication(W_interaction_deconvolution,D_matrix):
+def interaction_communication(W_interaction_deconvolution,D_matrix,absolute_intensity):
     W_interaction_deconvolution = np.array(W_interaction_deconvolution, dtype = np.float32)
     W_interaction_deconvolution = W_interaction_deconvolution.T
-    add_interaction_deconvolution = np.zeros((len(W_interaction_deconvolution),len(W_interaction_deconvolution)))
-    for i in range(len(W_interaction_deconvolution)):
-        for j in range(len(W_interaction_deconvolution[i])):
-            if W_interaction_deconvolution[i][j] < 0:
-                add_interaction_deconvolution[j][i] =  -1 * W_interaction_deconvolution[i][j]
-                W_interaction_deconvolution[i][j] = 0
-    W_interaction_deconvolution = W_interaction_deconvolution + add_interaction_deconvolution
+    # Row spot sends out signals, column spot receives signals, 
+    # and positive and negative represent the up- and down-regulation of the signal on the gene expression of the target spot
+    if absolute_intensity:
+        #Enable absolute intensity, then do not show positive or negative in the
+        W_interaction_deconvolution[W_interaction_deconvolution < 0] = -W_interaction_deconvolution[W_interaction_deconvolution < 0]
     W_interaction_deconvolution = np.multiply(W_interaction_deconvolution,D_matrix)
     return W_interaction_deconvolution
 
@@ -363,8 +361,13 @@ def get_deconvolution(sc_data,
                       Number_of_iterations = 700,
                       max_interaction = 1,
                       #Actual number of iterations
-                      spot_start = 0
+                      spot_start = 0,
                       #If you are resuming after an interruption, you need to update the save path, otherwise the original file will be overwritten.
+                      absolute_intensity = False,
+                      #The output form of the communication matrix, the rows and columns of the communication matrix represent the communication line of defense, 
+                      #and the positive and negative matrix elements represent the upward and downward adjustments; 
+                      #if this value is set to True, then the upward and downward adjustments are not displayed, 
+                      #and only the communication strength is outputted.
 ):
     #Creating chokepoints and deciding whether to enter the deconvolution program or not
     #STEP1: QC
@@ -524,12 +527,25 @@ def get_deconvolution(sc_data,
             
             result_cell = np.array(result_cell)
             result_x_mid = result_cell[1:,1:]
+
             W_ini = get_STinteractions(expre_matrix = y_matrix,Beta_matrix = beta_matrix,deconvolution_x = result_x_mid)
-            W_interaction = interaction_communication(W_ini,d_matrix)
-            print("Deconvolution Finish!")
+            W_interaction = interaction_communication(W_ini,d_matrix,absolute_intensity)
+
+            result_cell_normalized = result_cell.copy()
+            result_cell_normalized_array = result_cell_normalized[1:,1:]
+            result_cell_normalized_array = result_cell_normalized_array.astype(float)
+            row_sums = result_cell_normalized_array.sum(axis=1, keepdims=True) 
+            row_sums[row_sums == 0] = 1
+            normalized_data = result_cell_normalized_array / row_sums
+            result_cell_normalized[1:, 1:] = normalized_data
+
             result_cell = result_cell.tolist()
+            result_cell_normalized = result_cell_normalized.tolist()
+
             W_interaction = add_lablenames(W_interaction,st_coordinate=st_coordinate)
-            return result_cell,W_interaction
+
+            print("Deconvolution Finish!")
+            return result_cell,result_cell_normalized,W_interaction
 
         
 
@@ -615,12 +631,25 @@ def get_deconvolution(sc_data,
 
             result = np.array(result)
             result_x_mid = result[1:,1:]
+
             W_ini = get_STinteractions(expre_matrix = y_matrix,Beta_matrix = beta_matrix,deconvolution_x = result_x_mid)
-            W_interaction = interaction_communication(W_ini,d_matrix)
-            print("Deconvolution Finish!")
+            W_interaction = interaction_communication(W_ini,d_matrix,absolute_intensity)
+            
+            result_normalized = result.copy()
+            result_normalized_array = result_normalized[1:,1:]
+            result_normalized_array = result_normalized_array.astype(float)
+            row_sums = result_normalized_array.sum(axis=1,keepdims=True)
+            row_sums[row_sums == 0] = 1
+            normalized_data = result_normalized_array / row_sums
+            result_normalized[1:, 1:] = normalized_data
+
             result = result.tolist()
+            result_normalized = result_normalized.tolist()
+            
             W_interaction = add_lablenames(W_interaction,st_coordinate=st_coordinate)
-            return result,W_interaction
+            
+            print("Deconvolution Finish!")
+            return result,result_normalized,W_interaction
     else:
 
         fun_flag = 1 
@@ -719,12 +748,25 @@ def get_deconvolution(sc_data,
 
             result_cell = np.array(result_cell)
             result_x_mid = result_cell[1:,1:]
+
             W_ini = get_STinteractions(expre_matrix = y_matrix,Beta_matrix = beta_matrix,deconvolution_x = result_x_mid)
-            W_interaction = interaction_communication(W_ini,d_matrix)
-            print("Deconvolution Finish!")
+            W_interaction = interaction_communication(W_ini,d_matrix,absolute_intensity)
+
+            result_cell_normalized = result_cell.copy()
+            result_cell_normalized_array = result_cell_normalized[1:,1:]
+            result_cell_normalized_array = result_cell_normalized_array.astype(float)
+            row_sums = result_cell_normalized_array.sum(axis=1, keepdims=True) 
+            row_sums[row_sums == 0] = 1
+            normalized_data = result_cell_normalized_array / row_sums
+            result_cell_normalized[1:, 1:] = normalized_data
+
             result_cell = result_cell.tolist()
+            result_cell_normalized = result_cell_normalized.tolist()
+
             W_interaction = add_lablenames(W_interaction,st_coordinate=st_coordinate)
-            return result_cell,W_interaction
+
+            print("Deconvolution Finish!")
+            return result_cell,result_cell_normalized,W_interaction
 
         
 
@@ -807,13 +849,22 @@ def get_deconvolution(sc_data,
             
             result = np.array(result)
             result_x_mid = result[1:,1:]
+
             W_ini = get_STinteractions(expre_matrix = y_matrix,Beta_matrix = beta_matrix,deconvolution_x = result_x_mid)
-            W_interaction = interaction_communication(W_ini,d_matrix)
-            print("Deconvolution Finish!")
+            W_interaction = interaction_communication(W_ini,d_matrix,absolute_intensity)
+            
+            result_normalized = result.copy()
+            result_normalized_array = result_normalized[1:,1:]
+            result_normalized_array = result_normalized_array.astype(float)
+            row_sums = result_normalized_array.sum(axis=1,keepdims=True)
+            row_sums[row_sums == 0] = 1
+            normalized_data = result_normalized_array / row_sums
+            result_normalized[1:, 1:] = normalized_data
+
             result = result.tolist()
+            result_normalized = result_normalized.tolist()
+            
             W_interaction = add_lablenames(W_interaction,st_coordinate=st_coordinate)
-            return result,W_interaction
-
-
-        
-    
+            
+            print("Deconvolution Finish!")
+            return result,result_normalized,W_interaction

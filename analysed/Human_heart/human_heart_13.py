@@ -15,7 +15,7 @@ st_data = read_file('E:/upload_data/developing_human_heart/filtered_data/st_data
 st_coordinates = read_file('E:/upload_data/developing_human_heart/filtered_data/st_data_coordinate_13.txt')
 celltype = read_file('E:/upload_data/developing_human_heart/filtered_data/celltype_14.txt')
 
-result_data,W_interaction = nd.get_deconvolution(
+result_data,result_data_normalized,W_interaction = nd.get_deconvolution(
                                     st_data = st_data,
                                     sc_data = sc_data,
                                     cell_type = celltype,

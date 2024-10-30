@@ -1,1 +1,1 @@
-from .NODE import get_deconvolution
+from .NODE import get_deconvolution,get_test_data
