@@ -78,3 +78,33 @@ The method_optimize parameter has two options, 1 and 2, with method 1 being fast
 In analysed, we provide the code for our algorithms, the data can be obtained from data_available.txt or https://node-deconvolution.sourceforge.io,  you can clone it locally and download data, change the path, perform the algorithms and validate it.
 ## Result
 Here we provide our results analysis files, where you can view the intermediate files generated during our analysis, as well as the final graphic files.
+## import
+    # pip install NODE-deconvolution
+    import NODE_deconvolution as nd
+    import numpy as np
+    import pandas as pd
+## Input data
+    # Make sure to replace the placeholder file paths in the provided scripts with the correct paths to your local data files.
+    st_data = pd.read_csv('.../example_data/test_data/st_data.txt',sep=' ')
+    sc_data = pd.read_csv('.../example_data/test_data/sc_data.txt',sep=' ')
+    st_coordinate = pd.read_csv('.../example_data/test_data/st_pixel.txt',sep=' ')
+    cell_type = pd.read_csv('.../example_data/test_data/cell_type.txt',sep=' ')
+## Transfer data
+    st_data = np.vstack((np.array(st_data.columns).reshape(1,-1),st_data.values))
+    sc_data = np.vstack((np.array(sc_data.columns).reshape(1,-1),sc_data.values))
+    st_coordinate = np.vstack((np.array(st_coordinate.columns).reshape(1,-1),st_coordinate.values))
+    cell_type = np.vstack((np.array(cell_type.columns).reshape(1,-1),cell_type.values))
+## Deconvolution
+    result_data,result_data_normalized,W_interaction = nd.get_deconvolution(
+                                st_data = st_data,
+                                sc_data = sc_data,
+                                cell_type = cell_type,
+                                st_coordinate = st_coordinate,
+                                method_optimize = 1,
+                                prossecing_reserve = False,
+                                file_path = '',
+                                Number_of_iterations = 500)
+## Data and code
+    For more details, please refer to the provided example data and code:
+    Test Data: See example_data.zip for the sample dataset.
+    Example Code: Refer to example.ipynb for a step-by-step guide on how to use the provided scripts and analyze the data.
